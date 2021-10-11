@@ -23,7 +23,7 @@ for g in os.listdir(test_style_images_path):
 
 
 def generate_images(content_path, style_path, alpha=1.0):
-    re_train_model_path = "./result/model_state/5_epoch.pth"
+    re_train_model_path = "result_style_weight_10/model_state/20_epoch.pth"
     model = AdainNet().cuda()
     pre = torch.load(re_train_model_path)
     model.load_state_dict(pre)
@@ -53,24 +53,28 @@ c_name = os.path.basename(c).split('.')[0]
 s = test_style_images[9]
 s_name = os.path.basename(s).split('.')[0]
 c_s_zips = zip(test_content_images, test_style_images)
-image_save_path = "./result/test_result"
+image_save_path = "result_style_weight_10/test_result"
 if not os.path.exists(image_save_path):
     os.mkdir(image_save_path)
 alpha_ = 1.0
-result = generate_images(c, s, alpha_)
-# save_image(result, f"{image_save_path + '/' + c_name + '_' + s_name + '.jpg'}")
-save_image(result, f"{image_save_path + '/' + c_name + '_' + s_name + '_'+str(alpha_)+'.jpg'}")
-print("saved")
-# for c in test_content_images:
-#     for s in test_style_images:
-#         try:
-#             c_name = os.path.basename(c)
-#             s_name = os.path.basename(s)
-#             image_save_path = "./result/test_result"
-#             if not os.path.exists(image_save_path):
-#                 os.mkdir(image_save_path)
-#             result = generate_images(c, s)
-#             save_image(result, f"{image_save_path + '/' + c_name + '_' + s_name + '.jpg'}")
-#             print("saved")
-#         except:
-#             continue
+
+# save one image
+# result = generate_images(c, s, alpha_)
+# save_image(result_style_weight_5, f"{image_save_path + '/' + c_name + '_' + s_name + '.jpg'}")
+# save_image(result, f"{image_save_path + '/' + c_name + '_' + s_name + '_'+str(alpha_)+'.jpg'}")
+# print("saved")
+
+# save images
+for c in test_content_images:
+    for s in test_style_images:
+        try:
+            c_name = os.path.basename(c).split(".")[0]
+            s_name = os.path.basename(s).split(".")[0]
+            image_save_path = "./result_style_weight_10/test_result"
+            if not os.path.exists(image_save_path):
+                os.mkdir(image_save_path)
+            result = generate_images(c, s, alpha_)
+            save_image(result, f"{image_save_path + '/' + c_name + '_' + s_name + '_'+str(alpha_)+'.jpg'}")
+            print("saved")
+        except:
+            continue

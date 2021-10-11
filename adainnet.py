@@ -99,7 +99,7 @@ class AdainNet(nn.Module):
         t = alpha * adain_out + (1-alpha)+g_t
         return self.decoder(t)
 
-    def forward(self, content_feature, style_feature, alpha=1.0, lam=5.0):
+    def forward(self, content_feature, style_feature, alpha=1.0, lam=10.0):
         assert 0 <= alpha <= 1.0
         en_c = self.vggencoder(content_feature)
         en_s = self.vggencoder(style_feature)

@@ -10,11 +10,12 @@ from adainnet import AdainNet
 from torchvision.utils import save_image
 from tqdm import tqdm
 
-BATCH_SIZE = 10
+BATCH_SIZE = 8
 EPOCH = 20
-LR = 3e-5
-snapshot_interval = 3000
-save_dir = "result"
+LR = 4e-5
+snapshot_interval = (60000 // BATCH_SIZE) // 2
+print(f"snapshot_interval: {snapshot_interval}")
+save_dir = "result_style_weight_10"
 train_content_dir = "./images/train/content_images"
 train_style_dir = "./images/train/style_images"
 test_content_dir = "./images/test/content"
@@ -54,25 +55,25 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False)
     test_iter = list(test_loader)
-    print(len(test_iter))
+    # print(len(test_iter))
 
     # set model and optimizer
-    re_train_model_path = "./result/model_state/adainnet.pth"
+    re_train_model_path = "result_style_weight_10/model_state/12_epoch.pth"
     model = AdainNet().to(device)
     pre = torch.load(re_train_model_path)
     model.load_state_dict(pre)
     optimizer = Adam(model.parameters(), lr=LR)
 
     # start training
-    loss_list = []
-    for e in range(1, EPOCH + 1):
+    # loss_list = []
+    for e in range(13, EPOCH + 1):
         print(f'Start {e} epoch')
         # enumerate() 函数用于将一个可遍历的数据对象(如列表、元组或字符串)组合为一个索引序列，同时列出数据和数据下标，一般用在 for 循环当中。
         for i, (content, style) in tqdm(enumerate(train_loader, 1)):
             content = content.to(device)
             style = style.to(device)
             loss = model(content, style)
-            loss_list.append(loss.item())
+            # loss_list.append(loss.item())
 
             optimizer.zero_grad()
             loss.backward()
@@ -93,15 +94,15 @@ def main():
                 res = res.to('cpu')
                 save_image(res, f'{image_dir}/{e}_epoch_{i}_iteration.png', nrow=BATCH_SIZE)
         torch.save(model.state_dict(), f'{model_state_dir}/{e}_epoch.pth')
-    plt.plot(range(len(loss_list)), loss_list)
-    plt.xlabel('iteration')
-    plt.ylabel('loss')
-    plt.title('train loss')
-    plt.savefig(f'{loss_dir}/train_loss.png')
-    with open(f'{loss_dir}/loss_log2.txt', 'w') as f:
-        for l in loss_list:
-            f.write(f'{l}\n')
-    print(f'Loss saved in {loss_dir}')
+    # plt.plot(range(len(loss_list)), loss_list)
+    # plt.xlabel('iteration')
+    # plt.ylabel('loss')
+    # plt.title('train loss')
+    # plt.savefig(f'{loss_dir}/train_loss.png')
+    # with open(f'{loss_dir}/loss_log2.txt', 'w') as f:
+    #     for l in loss_list:
+    #         f.write(f'{l}\n')
+    # print(f'Loss saved in {loss_dir}')
 
 
 if __name__ == '__main__':
